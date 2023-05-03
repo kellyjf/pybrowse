@@ -28,7 +28,8 @@ class BrowserWindow(QtWidgets.QMainWindow, Ui_BrowserWindow):
 		self.searchButton.clicked.connect(self.search)
 		self.searchLine.returnPressed.connect(self.search)
 		self.moduleTree.currentItemChanged.connect(self.detail)
-		self.moduleTree.itemDoubleClicked.connect(self.expand)
+		#self.moduleTree.itemDoubleClicked.connect(self.expand)
+		self.moduleTree.itemActivated.connect(self.expand)
 		self.searchLine.setFocus()
 		self.dejavu={}
 		self.regex=re.compile("<class '(.*)'>")
@@ -37,18 +38,20 @@ class BrowserWindow(QtWidgets.QMainWindow, Ui_BrowserWindow):
 
 	def detail(self, item, oitem):
 		elem=item.userdata
-		self.docEdit.setPlainText(elem.__doc__)
+		if item.text(1) in ['str','int','list','dict']:
+			self.docEdit.setPlainText(str(elem))
+		else:
+			self.docEdit.setPlainText(elem.__doc__)
 
 	def add_module(self,parent):
 		mod=parent.userdata
 		for key in mod.__dict__.keys():
 			elem=mod.__dict__.get(key)
 			atype=str(type(elem))
-			child=TreeItem([key,atype],elem)
-			parent.addChild(child)
 			mat=self.regex.match(atype)
 			if mat:
 				btype=mat.group(1)
+				child=TreeItem([key,btype],elem)
 				if 'module' in btype:
 					font=child.font(0)
 					font.setBold(True)
@@ -57,10 +60,13 @@ class BrowserWindow(QtWidgets.QMainWindow, Ui_BrowserWindow):
 					child.setForeground(0,QtGui.QBrush(QtGui.QColor(0,255,0)))
 				elif '.' in btype:
 					child.setForeground(0,QtGui.QBrush(QtGui.QColor(0,0,255)))
+			else:
+				child=helpers.TreeItem([key,atype],elem)
+			parent.addChild(child)
 
+		self.moduleTree.expandItem(parent)
 		self.moduleTree.resizeColumnToContents(1)
 		self.moduleTree.resizeColumnToContents(0)
-		self.moduleTree.expandItem(parent)
 
 	def setModule(self, module):
 		self.moduleTree.clear()
@@ -74,8 +80,9 @@ class BrowserWindow(QtWidgets.QMainWindow, Ui_BrowserWindow):
 		self.moduleTree.addTopLevelItem(parent)
 		self.add_module(parent)
 	
-	def search(self, modname):
-		self.searchLine.setText(modname)
+	def search(self, modname=None):
+		if modname:
+			self.searchLine.setText(modname)
 		modname=self.searchLine.text()
 		module=__import__(modname)
 

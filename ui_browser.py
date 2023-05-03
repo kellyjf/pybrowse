@@ -34,9 +34,13 @@ class Ui_BrowserWindow(object):
 		self.moduleTree.setObjectName("moduleTree")
 		self.horizontalLayout_2.addWidget(self.moduleTree)
 		self.docEdit = QtWidgets.QTextEdit(self.centralwidget)
+		self.docEdit.setTabChangesFocus(True)
+		self.docEdit.setReadOnly(True)
+		self.docEdit.setAcceptRichText(False)
 		self.docEdit.setObjectName("docEdit")
 		self.horizontalLayout_2.addWidget(self.docEdit)
-		self.horizontalLayout_2.setStretch(0, 1)
+		self.horizontalLayout_2.setStretch(0, 3)
+		self.horizontalLayout_2.setStretch(1, 2)
 		self.verticalLayout.addLayout(self.horizontalLayout_2)
 		BrowserWindow.setCentralWidget(self.centralwidget)
 		self.menubar = QtWidgets.QMenuBar(BrowserWindow)
@@ -54,10 +58,11 @@ class Ui_BrowserWindow(object):
 		self.menubar.addAction(self.menu_File.menuAction())
 
 		self.retranslateUi(BrowserWindow)
+		self.actionExit.triggered.connect(BrowserWindow.close) # type: ignore
 		QtCore.QMetaObject.connectSlotsByName(BrowserWindow)
-		BrowserWindow.setTabOrder(self.searchLine, self.moduleTree)
 		BrowserWindow.setTabOrder(self.moduleTree, self.docEdit)
-		BrowserWindow.setTabOrder(self.docEdit, self.searchButton)
+		BrowserWindow.setTabOrder(self.docEdit, self.searchLine)
+		BrowserWindow.setTabOrder(self.searchLine, self.searchButton)
 
 	def retranslateUi(self, BrowserWindow):
 		_translate = QtCore.QCoreApplication.translate
