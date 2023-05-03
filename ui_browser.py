@@ -36,6 +36,7 @@ class Ui_BrowserWindow(object):
 		self.docEdit = QtWidgets.QTextEdit(self.centralwidget)
 		self.docEdit.setObjectName("docEdit")
 		self.horizontalLayout_2.addWidget(self.docEdit)
+		self.horizontalLayout_2.setStretch(0, 1)
 		self.verticalLayout.addLayout(self.horizontalLayout_2)
 		BrowserWindow.setCentralWidget(self.centralwidget)
 		self.menubar = QtWidgets.QMenuBar(BrowserWindow)
